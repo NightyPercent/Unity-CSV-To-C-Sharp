@@ -1,13 +1,13 @@
 ﻿# -*- coding: utf-8 -*-
-#WangCunKai Codeing
+#cunkai
 import os 
 import shutil
 import re
 import csv
 import platform
+import sys
 
 sysType = platform.system()
-
 ESC = chr(27)
 # 字体
 a_default  = 0
@@ -57,10 +57,12 @@ csvDataParentName = "csvDataParent"
 dataManageName = "dataManage"
 
 defaultcs = path+"/default/defaultclass.cs"
+defaultcsv = path+"/default/defaultcsv.csv"
 defaultDataManage = path+"/default/defaultDataManage.cs"
 defaultCsvDataParent = path+"/default/defaultCsvDataParent.cs"
 
 print(color_str("SYS: "+sysType,bg_blue, bg_cyan, a_bold))
+print "coding: "+sys.getdefaultencoding()  
 
 classList = []
 
@@ -75,10 +77,27 @@ def toCsString(line):
             data += '\"'+item+'\"'
             if i<len(line)-1:
                 data += ','
+        else:
+        	data += '\"'+'-1'+'\"'
+        	if i<len(line)-1:
+        		data+=','
 
     if isItem==0:
         return ''
     return data
+
+def openFile(name,ftype):
+    fp=None
+
+    if(sysType =="Windows"):
+        try:
+            fp=open(name,ftype,encoding='utf-8')
+        except:  
+            fp=open(name,ftype)
+    else:
+        fp=open(name,ftype)
+
+    return fp
 
 def mkdir(path):
 
@@ -127,17 +146,12 @@ def start(rootDir):
 
                 #；compatible
                 fp = None
-                if(sysType =="Windows"):
-                    #print(filePath)
-                    fp=open(filePath,'r',encoding='utf-8')
-                    alllines=fp.readlines()
-                    fp.close() 
-                    fp=open(filePath,'w',encoding='utf-8')
-                else:
-                    fp=open(filePath,'r')
-                    alllines=fp.readlines()
-                    fp.close() 
-                    fp=open(filePath,'w') 
+
+                fp=openFile(filePath,'r')
+                alllines=fp.readlines()
+                fp.close() 
+                fp=openFile(defaultcsv,'w')
+
 
                 #write start
                 for eachline in alllines:
@@ -147,9 +161,12 @@ def start(rootDir):
                 fp.close()
   
                 if(sysType == "Windows"):
-                    reader = csv.reader(open(filePath, 'rU',encoding='utf-8'), dialect='excel')
+                    try:
+                        reader = csv.reader(open(defaultcsv, 'rU',encoding='utf-8'), dialect='excel')
+                    except:
+                    	reader = csv.reader(open(defaultcsv, 'rU'), dialect='excel')
                 else:
-                    reader = csv.reader(open(filePath, 'rU'), dialect='excel')
+                    reader = csv.reader(open(defaultcsv, 'rU'), dialect='excel')
 
                 chinaKey = None
                 key = None
@@ -171,16 +188,10 @@ def start(rootDir):
                 # read lines
                 fp = None
 
-                if(sysType =="Windows"):
-                    fp=open(csharpFilePath,'r',encoding='utf-8')
-                    alllines=fp.readlines()
-                    fp.close() 
-                    fp=open(csharpFilePath,'w',encoding='utf-8')
-                else:
-                    fp=open(csharpFilePath,'r')
-                    alllines=fp.readlines()
-                    fp.close() 
-                    fp=open(csharpFilePath,'w') 
+                fp=openFile(csharpFilePath,'r')
+                alllines=fp.readlines()
+                fp.close() 
+                fp=openFile(csharpFilePath,'w')
 
                 #write start
                 for eachline in alllines:
@@ -204,16 +215,10 @@ def start(rootDir):
 
     fp = None
     for classItem in classList:
-        if(sysType =="Windows"):
-            fp=open(dataManagePath,'r',encoding='utf-8')
-            alllines=fp.readlines()
-            fp.close() 
-            fp=open(dataManagePath,'w',encoding='utf-8')
-        else:
-            fp=open(dataManagePath,'r')
-            alllines=fp.readlines()
-            fp.close() 
-            fp=open(dataManagePath,'w') 
+        fp=openFile(dataManagePath,'r')
+        alllines=fp.readlines()
+        fp.close() 
+        fp=openFile(dataManagePath,'w')
 
         #write start
         for eachline in alllines:
@@ -230,16 +235,11 @@ def start(rootDir):
     shutil.copy(defaultCsvDataParent,csvDataParentPath)
 
     fp = None
-    if(sysType =="Windows"):
-        fp=open(csvDataParentPath,'r',encoding='utf-8')
-        alllines=fp.readlines()
-        fp.close() 
-        fp=open(csvDataParentPath,'w',encoding='utf-8')
-    else:
-        fp=open(csvDataParentPath,'r')
-        alllines=fp.readlines()
-        fp.close() 
-        fp=open(csvDataParentPath,'w') 
+    
+    fp=openFile(csvDataParentPath,'r')
+    alllines=fp.readlines()
+    fp.close() 
+    fp=openFile(csvDataParentPath,'w')
 
     #write start
     for eachline in alllines:
@@ -253,3 +253,8 @@ def start(rootDir):
                 
 start(csvPath)
 print(color_str("GOOD",fg_white, bg_green, a_italic))
+#coding=utf-8
+if(sysType =="Windows"):
+    raw_input(unicode('按回车键退出...','utf-8').encode('gbk'))
+else:
+    raw_input(unicode('按回车键退出...','utf-8').encode('utf-8'))
