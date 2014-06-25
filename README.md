@@ -1,4 +1,4 @@
-CSV转C#文件，让Unity运行效率更快。
+CSV转C#文件，让Unity效率更快->zip下载右侧Download ZIP按钮
 ====================
 求投个反馈：http://toupiao.sheup.com/display.php?id=1459
 
