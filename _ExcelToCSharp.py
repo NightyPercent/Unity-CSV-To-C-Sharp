@@ -6,6 +6,10 @@ import re
 import csv
 import platform
 import sys
+import codecs
+
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 sysType = platform.system()
 ESC = chr(27)
@@ -69,18 +73,21 @@ classList = []
 def toCsString(line):
     isItem = 0
 
-    data = ''
+    data = '\"'
+
     for i in range(len(line)):
         item = line[i]
         if item != '':
             isItem = 1
-            data += '\"'+item+'\"'
+            data += item
             if i<len(line)-1:
-                data += ','
+                data += '|'
         else:
-        	data += '\"'+'-1'+'\"'
+        	data += '-1'
         	if i<len(line)-1:
-        		data+=','
+        		data+='|'
+
+    data+='\"'
 
     if isItem==0:
         return ''
@@ -178,10 +185,15 @@ def start(rootDir):
                     else:
                         if key is None:
                             key = toCsString(line)
+                            print key
                         else:
                             item = toCsString(line)
                             if item!='':
-                                data = data +'{'+item+'}'+ ',\n\t\t'
+                                data = data +item+ ',\n\t\t'
+                if(sysType == "Windows"):               
+                    chinaKey = str(chinaKey).decode('gb2312')
+                    key = str(key).decode('gb2312')
+                    data = str(data).decode('gb2312')
                 #print(key)
                 #print(data)
                 # write *.cs
@@ -200,14 +212,13 @@ def start(rootDir):
                     # china key
                     a=re.sub('defaultChinakey',chinaKey,a)
                     # allkey
-                    a=re.sub('//defaultkey',key,a)
+                    a=re.sub('\"//defaultkey\"',key,a)
                     # alldata
                     a=re.sub('//defaultdata',data,a)
                     # csvDataParent
                     a=re.sub('defaultCsvDataParent',csvDataParentName,a)
-                    fp.writelines(a) 
+                    fp.writelines(a)
                 fp.close()
-
 
 # copy defaultDataManage.cs
     dataManagePath = csharp+dataManageName+".cs"

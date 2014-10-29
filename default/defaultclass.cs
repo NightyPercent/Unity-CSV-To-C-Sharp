@@ -5,7 +5,7 @@ public class defaultclass : defaultCsvDataParent{
 
 	private volatile static defaultclass _instance = null;
     private static readonly object lockHelper = new object();
-    private defaultclass(){}
+    
 	public static defaultclass Instance()
 	{
         if(_instance == null)
@@ -19,32 +19,51 @@ public class defaultclass : defaultCsvDataParent{
         return _instance;
     }
 
-	// "key1","key2","key3"
-	private string[] _AllKey = {
-		//defaultChinakey
-		//defaultkey
-	};
-
+	//defaultChinakey
+	private const string _csvAllKey = "//defaultkey";
+	
 	// {"10","12","11"}
-	private string[,] _DataArray= {
+	private string[] _csvDataArray = {
 		//defaultdata
 	};
+
+
+
+
+	// "key1","key2","key3"
+	private string[] _AllKey = null;
+
+	// {"10","12","11"}
+	private string[][] _DataArray = null;
+
+	private defaultclass(){
+		_AllKey = _csvAllKey.Split('|');
+
+		int dataNum = _csvDataArray.Length;
+
+		_DataArray = new string[dataNum][];
+
+		for(int i=0; i<dataNum; i++)
+		{
+			_DataArray[i] = _csvDataArray[i].Split('|');
+		}
+	}
 
 	//打印
 	public override void print()
 	{
 
-		int row = _DataArray.GetLength(0);
-		int column = _DataArray.GetLength(1);
+		int row = _DataArray.Length;
+		int column = _DataArray[0].Length;
 
 		for(int i=0; i<row; i++)
 		{
 			string printData = i+"row: ";
 			for(int j=0; j<column; j++)
 			{
-				printData+=(_DataArray[i,j]+" ");
+				printData+=(_DataArray[i][j]+" ");
 			}
-			Debug.Log(printData);
+			Debuger.Log(printData);
 		}
 
 	}
@@ -56,14 +75,14 @@ public class defaultclass : defaultCsvDataParent{
 	}
 
 	//获取所有的Data
-	public override string[,] getDataArray()
+	public override string[][] getDataArray()
 	{
 		return _DataArray;
 	}
 
 	public  override int num()
 	{
-		return _DataArray.GetLength(0);
+		return _DataArray.Length;
 	}
 
 	public  override int keynum()
@@ -84,16 +103,36 @@ public class defaultclass : defaultCsvDataParent{
 		return -1;
 	}
 
+	//输入数据查询是否出现过，并且返回Key。（查到第一个直接返回）
+	public override string getKeyFromData(string _data)
+	{
+		int row = _DataArray.Length;
+		int column = _DataArray[0].Length;
+		
+		for(int i=0; i<row; i++)
+		{
+			for(int j=0; j<column; j++)
+			{
+				if(_DataArray[i][j].Equals(_data))
+				{
+					return _AllKey[j];
+				}
+			}
+		}
+
+		return "";
+	}
+
 	//通过类型和行数获取内容 num 0 start
 	public override string get(int num,string typeName)
 	{
 		int typenum = getTypeNum(typeName);
 		if(typenum==-1)
 		{
-			Debug.Log(typeName+"   "+num+"  error");
+			Debuger.Log(typeName+"   "+num+"  error");
 			return "-1";
 		}
-		return _DataArray[num,typenum];
+		return _DataArray[num][typenum];
 	}
 	
 	//转换get的类型为int返回
