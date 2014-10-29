@@ -1,6 +1,7 @@
 CSV转C#文件，让Unity效率更快->zip下载右侧Download ZIP按钮
 ====================
-求投个反馈：http://toupiao.sheup.com/display.php?id=1459
+略微看看default文件夹下面的cs文件，大家就会发现可以随意更换成任何语言。
+（例如Lua,C++,以及适配各个引擎）
 
 Unity CSV转为C#文件 来省去解析csv的步骤，节省游戏加载时间。
 
